@@ -60,6 +60,7 @@ void KickBallNode::subscription_callback(const ai_msgs::msg::PerceptionTargets::
             no_target_frame_number = 0;
         }
 
+        //检测到目标后的行为
         if (p_angle >= 1100 || p_angle <= 900){
             if (center_y < 220 || center_y > 260)
             {
@@ -69,31 +70,64 @@ void KickBallNode::subscription_callback(const ai_msgs::msg::PerceptionTargets::
                 order_interpreter_->control_PWM_servo(1, p_angle , 200);
             }
         } else {
-            order_interpreter_->control_PWM_servo(1, 1000, 200);
+            p_angle = 1000;
+            order_interpreter_->control_PWM_servo(1, p_angle, 200);
         }
 
-        if (center_x < 300)
-        {
-            order_interpreter_->control_serial_servo("left_move_30");
-        } else if(center_x < 390){
-            order_interpreter_->control_serial_servo("left_move");
+        if (center_y < 350 && p_angle > 1100){
+            if(center_x < 380) {
+                order_interpreter_->control_serial_servo("turn_left_fast");
+            } else if(center_x > 420) {
+                order_interpreter_->control_serial_servo("turn_right_fast");
+            } else {
+                order_interpreter_->control_serial_servo("go_forward");
+            }
+        } else{
+            if (center_x < 300)
+            {
+                order_interpreter_->control_serial_servo("left_move_30");
+            } else if(center_x < 400){
+                order_interpreter_->control_serial_servo("left_move");
+            }
+            if (center_x > 560)
+            {
+                order_interpreter_->control_serial_servo("right_move_30");
+            } else if (center_x > 470){
+                order_interpreter_->control_serial_servo("right_move");
+            }
+            if (center_y < 300)
+            {
+                order_interpreter_->control_serial_servo("go_forward");
+            } else if (center_y < 390)
+            {
+                order_interpreter_->control_serial_servo("go_forward_one_step");
+            }
+            if ((center_x > 390) && (center_x < 470) && (center_y > 390) && (p_angle == 1000) ){
+                order_interpreter_->control_serial_servo("right_shot");
+            }
         }
-        if (center_x > 560)
-        {
-            order_interpreter_->control_serial_servo("right_move_30");
-        } else if (center_x > 470){
-            order_interpreter_->control_serial_servo("right_move");
-        }
-        if (center_y < 300)
-        {
-            order_interpreter_->control_serial_servo("go_forward");
-        } else if (center_y < 390)
-        {
-            order_interpreter_->control_serial_servo("go_forward_one_step");
-        }
-        if ((center_x > 390) && (center_x < 470) && (center_y > 390) ){
-            order_interpreter_->control_serial_servo("right_shot");
-        }
+        // if (center_x < 300)
+        // {
+        //     order_interpreter_->control_serial_servo("left_move_30");
+        // } else if(center_x < 390){
+        //     order_interpreter_->control_serial_servo("left_move");
+        // }
+        // if (center_x > 560)
+        // {
+        //     order_interpreter_->control_serial_servo("right_move_30");
+        // } else if (center_x > 470){
+        //     order_interpreter_->control_serial_servo("right_move");
+        // }
+        // if (center_y < 300)
+        // {
+        //     order_interpreter_->control_serial_servo("go_forward");
+        // } else if (center_y < 390)
+        // {
+        //     order_interpreter_->control_serial_servo("go_forward_one_step");
+        // }
+        // if ((center_x > 390) && (center_x < 470) && (center_y > 390) ){
+        //     order_interpreter_->control_serial_servo("right_shot");
+        // }
     }
 
     return;
